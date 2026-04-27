@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard • Contas da Casa</title>
+  <title>LTK • Contas da Casa</title>
 
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#0b1220">
@@ -16,8 +16,8 @@
       <div class="brand">
         <div class="logo" aria-hidden="true"></div>
         <div>
-          <h1>Dashboard de Contas da Casa</h1>
-          <p id="subtitle">Organize suas contas por mês, categoria e status • offline</p>
+          <h1>LTK</h1>
+          <p id="subtitle">Contas da casa • offline</p>
         </div>
       </div>
 
@@ -245,7 +245,6 @@
 
   <script src="app.js"></script>
   <script>
-    // Registro do Service Worker (PWA)
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js"));
     }
