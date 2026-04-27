@@ -24,19 +24,40 @@
 
 * { box-sizing: border-box; }
 html, body { height: 100%; }
+
 body{
   margin:0;
   font-family: var(--sans);
   color: var(--text);
+
+  /* base */
+  background: #0b1220;
+
+  /* iOS Safari: evita “pulo” por causa da barra do navegador */
+  min-height: 100svh;
+
+  overflow-x:hidden;
+  position: relative;
+}
+
+/* Fundo fixo (não “quebra” no mobile) */
+body::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
   background:
     radial-gradient(1200px 700px at 18% 12%, rgba(124,92,255,.25), transparent 55%),
     radial-gradient(900px 600px at 75% 18%, rgba(39,213,255,.18), transparent 60%),
     radial-gradient(900px 800px at 60% 80%, rgba(47,225,154,.12), transparent 55%),
     linear-gradient(180deg, #050814, #0b1220 55%, #070b17);
-  overflow-x:hidden;
+
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
-/* Evita estourar largura em iPhones pequenos */
 img, svg, canvas { max-width: 100%; }
 .wrap, .grid, .card, .bd, .hd, .filters, .kpis { min-width: 0; }
 
@@ -131,8 +152,6 @@ button, input, select{ font: inherit; color: inherit; }
   gap: 14px;
   align-items:start;
 }
-
-/* Deixa 1 coluna um pouco antes (melhor para iPhone landscape e telas pequenas) */
 @media (max-width: 1040px){
   .grid{ grid-template-columns: 1fr; }
   .brand{ min-width:auto; }
@@ -473,8 +492,6 @@ input:focus, select:focus{
 @media (max-width: 760px){
   .wrap{ padding: 18px 12px 44px; }
   .top-actions{ width: 100%; justify-content:flex-start; }
-
-  /* Botões podem quebrar linha e ocupar 100% quando faltar espaço */
   .top-actions .btn{ flex: 1 1 auto; }
   .top-actions .btn.primary{ flex: 1 1 100%; }
 
@@ -503,7 +520,6 @@ input:focus, select:focus{
     margin-bottom: 6px;
   }
 
-  /* Dropdown ocupa a largura toda no mobile */
   .menu{ width: 100%; }
   .menu > .btn{ width: 100%; }
   .menu-panel{ left:0; right:0; min-width: unset; }
@@ -530,7 +546,6 @@ input:focus, select:focus{
   .btn{ padding: 10px 10px; }
   .btn.small{ padding: 9px 10px; }
 
-  /* Evita textos longos estourarem */
   strong{ word-break: break-word; }
 }
 
