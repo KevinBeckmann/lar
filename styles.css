@@ -610,3 +610,69 @@ input[type="month"]::-webkit-calendar-picker-indicator{
     line-height: 42px;
   }
 }
+/* ===== iPhone 12 (iOS Safari): normalize date/month =====
+   Coloque NO FINAL do styles.css para sobrescrever o resto.
+*/
+input[type="date"],
+input[type="month"]{
+  -webkit-appearance: none;
+  appearance: none;
+
+  /* mesmo “tamanho” visual dos outros campos */
+  height: 44px;
+  min-height: 44px;
+
+  /* importante no iOS: o padding vertical + line-height costuma “estourar” */
+  padding: 10px 12px;
+  line-height: 1.2;
+
+  font-size: 16px; /* evita zoom */
+}
+
+/* Centraliza e remove paddings internos do webkit */
+input[type="date"]::-webkit-datetime-edit,
+input[type="month"]::-webkit-datetime-edit{
+  padding: 0;
+  line-height: 1.2;
+}
+
+input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+input[type="month"]::-webkit-datetime-edit-fields-wrapper{
+  padding: 0;
+  margin: 0;
+}
+
+input[type="date"]::-webkit-datetime-edit-text,
+input[type="month"]::-webkit-datetime-edit-text,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field,
+input[type="month"]::-webkit-datetime-edit-month-field,
+input[type="month"]::-webkit-datetime-edit-year-field{
+  padding: 0;
+  margin: 0;
+}
+
+/* Ícone */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="month"]::-webkit-calendar-picker-indicator{
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  margin: 0;
+  opacity: .85;
+}
+
+/* month centralizado como você quer */
+.month-center input[type="month"]{ text-align:center; }
+.month-center input[type="month"]::-webkit-datetime-edit{ text-align:center; }
+
+/* Em telas menores (inclui iPhone 12 em “Zoomed” e SE) */
+@media (max-width: 420px){
+  input[type="date"],
+  input[type="month"]{
+    height: 42px;
+    min-height: 42px;
+    padding: 9px 12px;
+  }
+}
