@@ -36,6 +36,10 @@ body{
   overflow-x:hidden;
 }
 
+/* Evita estourar largura em iPhones pequenos */
+img, svg, canvas { max-width: 100%; }
+.wrap, .grid, .card, .bd, .hd, .filters, .kpis { min-width: 0; }
+
 .wrap{
   max-width: 1200px;
   margin: 0 auto;
@@ -127,7 +131,9 @@ button, input, select{ font: inherit; color: inherit; }
   gap: 14px;
   align-items:start;
 }
-@media (max-width: 980px){
+
+/* Deixa 1 coluna um pouco antes (melhor para iPhone landscape e telas pequenas) */
+@media (max-width: 1040px){
   .grid{ grid-template-columns: 1fr; }
   .brand{ min-width:auto; }
 }
@@ -166,7 +172,9 @@ button, input, select{ font: inherit; color: inherit; }
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
-@media (max-width: 520px){ .kpis{ grid-template-columns: 1fr; } }
+@media (max-width: 620px){
+  .kpis{ grid-template-columns: 1fr; }
+}
 
 .kpi{
   border-radius: 14px;
@@ -378,7 +386,7 @@ input:focus, select:focus{
   background: rgba(255,255,255,.04);
   margin-top: 10px;
 }
-.checkline .left{ display:flex; flex-direction:column; gap:2px; }
+.checkline .left{ display:flex; flex-direction:column; gap:2px; min-width: 0; }
 .checkline .left .t{ font-size: 13px; }
 .checkline .left .d{ font-size: 12px; color: var(--muted); }
 
@@ -390,6 +398,7 @@ input:focus, select:focus{
   background: rgba(255,255,255,.06);
   cursor:pointer;
   transition: background .15s ease, border-color .15s ease;
+  flex: 0 0 auto;
 }
 .switch::after{
   content:"";
@@ -406,6 +415,10 @@ input:focus, select:focus{
 
 .chart{ display:grid; gap:10px; margin-top: 12px; }
 .bar{ display:grid; grid-template-columns: 140px 1fr 90px; gap: 10px; align-items:center; }
+@media (max-width: 420px){
+  .bar{ grid-template-columns: 1fr; gap: 6px; }
+  .bar .val{ text-align:left; }
+}
 .bar .nm{
   font-size: 12.5px;
   color: rgba(255,255,255,.85);
@@ -415,8 +428,8 @@ input:focus, select:focus{
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  min-width: 0;
 }
-.bar .nm .sw{ width:10px; height:10px; border-radius:3px; }
 .track{ height:10px; border-radius:999px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.10); overflow:hidden; }
 .fill{ height:100%; border-radius:999px; transition: width .25s ease; }
 .bar .val{ text-align:right; font-family: var(--mono); font-size: 12.5px; color: rgba(255,255,255,.82); }
@@ -456,10 +469,14 @@ input:focus, select:focus{
 .toast .t{ font-weight: 650; font-size: 13px; }
 .toast .d{ font-size: 12px; color: var(--muted); margin-top: 3px; }
 
-/* Mobile: tabela vira cards */
+/* ===== Mobile: tabela vira cards ===== */
 @media (max-width: 760px){
   .wrap{ padding: 18px 12px 44px; }
   .top-actions{ width: 100%; justify-content:flex-start; }
+
+  /* Botões podem quebrar linha e ocupar 100% quando faltar espaço */
+  .top-actions .btn{ flex: 1 1 auto; }
+  .top-actions .btn.primary{ flex: 1 1 100%; }
 
   .table thead{ display:none; }
   .table, .table tbody, .table tr, .table td{ display:block; width: 100%; }
@@ -486,5 +503,41 @@ input:focus, select:focus{
     margin-bottom: 6px;
   }
 
+  /* Dropdown ocupa a largura toda no mobile */
+  .menu{ width: 100%; }
+  .menu > .btn{ width: 100%; }
   .menu-panel{ left:0; right:0; min-width: unset; }
+}
+
+/* ===== iPhone bem pequeno (<= 420px) ===== */
+@media (max-width: 420px){
+  .wrap{ padding: 16px 10px 40px; }
+  header{ gap: 10px; margin-bottom: 14px; }
+
+  .logo{ width: 40px; height: 40px; border-radius: 13px; }
+  .brand h1{ font-size: 15px; }
+  .brand p{ font-size: 11.5px; }
+
+  .card .hd{ padding: 12px 12px 10px; }
+  .card .bd{ padding: 12px; }
+
+  input[type="text"], input[type="number"], input[type="date"], input[type="month"], select{
+    height: 42px;
+    padding: 9px 10px;
+  }
+
+  .kpi .value{ font-size: 20px; }
+  .btn{ padding: 10px 10px; }
+  .btn.small{ padding: 9px 10px; }
+
+  /* Evita textos longos estourarem */
+  strong{ word-break: break-word; }
+}
+
+/* ===== Extra pequeno (<= 360px) ===== */
+@media (max-width: 360px){
+  .wrap{ padding: 14px 9px 36px; }
+  .filters{ gap: 8px; }
+  .kpi{ padding: 11px 11px 10px; }
+  .pill{ font-size: 11px; padding: 4px 7px; }
 }
