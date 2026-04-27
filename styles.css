@@ -556,3 +556,57 @@ input:focus, select:focus{
   .kpi{ padding: 11px 11px 10px; }
   .pill{ font-size: 11px; padding: 4px 7px; }
 }
+/* ===== Fix iOS: date/month ficam com altura diferente ===== */
+input[type="date"],
+input[type="month"]{
+  -webkit-appearance: none;
+  appearance: none;
+  height: 44px;
+  line-height: 44px;
+  font-size: 16px;            /* evita zoom do iOS e iguala visual */
+  padding: 0 12px;            /* padding vertical vira 0, alinhamento fica estável */
+}
+
+/* Deixa o texto do campo no “miolo” alinhado igual aos outros */
+input[type="date"]::-webkit-datetime-edit,
+input[type="month"]::-webkit-datetime-edit{
+  line-height: 44px;
+  padding: 0;                 /* remove padding interno extra do iOS */
+}
+
+/* Remove espaçamentos internos que o iOS coloca por pedaço (dia/mês/ano) */
+input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+input[type="month"]::-webkit-datetime-edit-fields-wrapper{
+  padding: 0;
+}
+
+/* Ajusta o ícone do calendário do iOS para não aumentar a altura */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="month"]::-webkit-calendar-picker-indicator{
+  margin: 0;
+  padding: 0;
+  width: 18px;
+  height: 18px;
+  opacity: .85;
+}
+
+/* No seu layout você centraliza o month; aqui mantém centralizado sem “crescer” */
+.month-center input[type="month"]{
+  text-align: center;
+}
+.month-center input[type="month"]::-webkit-datetime-edit{
+  text-align: center;
+}
+
+/* Em telas pequenas, se você reduziu para 42px, acompanha */
+@media (max-width: 420px){
+  input[type="date"],
+  input[type="month"]{
+    height: 42px;
+    line-height: 42px;
+  }
+  input[type="date"]::-webkit-datetime-edit,
+  input[type="month"]::-webkit-datetime-edit{
+    line-height: 42px;
+  }
+}
