@@ -1,22 +1,14 @@
 {
-  "name": "Contas da Casa",
-  "short_name": "Contas",
-  "description": "Dashboard offline para gerenciar contas da casa.",
+  "name": "LTK",
+  "short_name": "LTK",
+  "description": "LTK — Dashboard offline para gerenciar contas da casa.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0b1220",
   "theme_color": "#0b1220",
   "icons": [
-    {
-      "src": "icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
   ]
 }
