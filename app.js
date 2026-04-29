@@ -33,6 +33,11 @@ const db = getFirestore(app);
 const BILLS_COL = "bills";
 const billsColRef = collection(db, BILLS_COL);
 
+// Defina como true em produção para desabilitar o Reset em nuvem
+const DISABLE_CLOUD_RESET = false;
+// Frase exata que o usuário deve digitar para confirmar o reset (case-sensitive)
+const RESET_CONFIRMATION_PHRASE = "APAGAR";
+
 /**********************
  * Utils
  **********************/
@@ -131,18 +136,20 @@ function normalizeItem(raw) {
   };
 }
 
-async function upsertRemote(item) {
-  // setDoc com merge garante criar ou atualizar
+async function createRemote(item) {
+  // Novo documento: define createdAt e updatedAt
   const ref = doc(db, BILLS_COL, item.id);
   await setDoc(ref, {
     ...item,
-    createdAt: serverTimestamp(), // em updates, isso também atualiza; se não quiser, use updateDoc condicional
-  }, { merge: true });
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
 }
 
 async function updateRemote(id, patch) {
+  // Atualização: preserva createdAt existente, apenas atualiza updatedAt
   const ref = doc(db, BILLS_COL, id);
-  await updateDoc(ref, patch);
+  await updateDoc(ref, { ...patch, updatedAt: serverTimestamp() });
 }
 
 async function deleteRemote(id) {
@@ -487,7 +494,12 @@ function bind() {
       const item = readForm();
       const editing = !!$("#id").value;
 
-      await upsertRemote(item);
+      if (editing) {
+        const { id, ...fields } = item;
+        await updateRemote(id, fields);
+      } else {
+        await createRemote(item);
+      }
 
       toast(editing ? "Conta atualizada" : "Conta adicionada", `${item.name} • ${money.format(item.amount)}`);
       clearForm();
@@ -543,7 +555,7 @@ function bind() {
       }
       if (act === "duplicate") {
         const copy = { ...item, id: uid(), paid: false };
-        await upsertRemote(copy);
+        await createRemote(copy);
         toast("Duplicado", `${copy.name} (novo)`);
         return;
       }
@@ -591,7 +603,7 @@ function bind() {
     try {
       const batch = writeBatch(db);
       for (const ex of examples) {
-        batch.set(doc(db, BILLS_COL, ex.id), { ...ex, createdAt: serverTimestamp() }, { merge: true });
+        batch.set(doc(db, BILLS_COL, ex.id), { ...ex, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
       }
       await batch.commit();
       toast("Exemplo", "Contas de exemplo criadas no Firebase.");
@@ -633,7 +645,7 @@ function bind() {
       for (const raw of items) {
         const it = normalizeItem(raw);
         if (!it) continue;
-        batch.set(doc(db, BILLS_COL, it.id), { ...it, createdAt: serverTimestamp() }, { merge: true });
+        batch.set(doc(db, BILLS_COL, it.id), { ...it, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
         merged++;
       }
 
@@ -646,7 +658,18 @@ function bind() {
 
   // Reset (apaga TUDO no Firestore: cuidado)
   $("#btnReset").addEventListener("click", async () => {
+    if (DISABLE_CLOUD_RESET) {
+      toast("Reset desativado", "O reset em nuvem está desabilitado nesta configuração.");
+      return;
+    }
+
     if (!confirm("Isso vai apagar TODAS as contas do Firebase (para todos). Continuar?")) return;
+
+    const phrase = prompt(`Para confirmar, digite exatamente: ${RESET_CONFIRMATION_PHRASE}`);
+    if (phrase !== RESET_CONFIRMATION_PHRASE) {
+      toast("Cancelado", "A confirmação não confere. Nenhum dado foi apagado.");
+      return;
+    }
 
     try {
       // apaga em lote o que está carregado (se tiver muitos, precisa paginação; para uso pessoal ok)
