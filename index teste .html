@@ -1,1342 +1,253 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard do Lar</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LTK • Contas da Casa</title>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            color: #333;
-        }
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0b1220">
 
-        .sidebar {
-            width: 260px;
-            background: #fff;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .sidebar-header {
-            padding: 25px;
-            border-bottom: 2px solid #f0f0f0;
-            text-align: center;
-        }
-
-        .sidebar-header h1 {
-            font-size: 24px;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-
-        .sidebar-header p {
-            font-size: 12px;
-            color: #999;
-        }
-
-        .nav-menu {
-            flex: 1;
-            padding: 20px 0;
-        }
-
-        .nav-item {
-            padding: 15px 25px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border-left: 4px solid transparent;
-            font-weight: 500;
-            color: #555;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .nav-item:hover {
-            background: #f5f5f5;
-            color: #667eea;
-        }
-
-        .nav-item.active {
-            background: #f0f4ff;
-            color: #667eea;
-            border-left-color: #667eea;
-        }
-
-        .main-container {
-            margin-left: 260px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            background: #fff;
-            padding: 20px 40px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header h2 {
-            color: #333;
-            font-size: 24px;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-danger {
-            background: #ff6b6b;
-            color: #fff;
-        }
-
-        .btn-danger:hover {
-            background: #ff5252;
-        }
-
-        .content {
-            flex: 1;
-            padding: 40px;
-            overflow-y: auto;
-            background: #f8f9fa;
-        }
-
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-            animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            margin-bottom: 20px;
-            transition: all 0.3s;
-        }
-
-        .card:hover {
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
-        }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .profile-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .profile-btn {
-            padding: 10px 15px;
-            border: 2px solid #ddd;
-            background: #fff;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .profile-btn.active {
-            border-color: #667eea;
-            background: #667eea;
-            color: #fff;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: #333;
-            font-size: 14px;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .task-item {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-left: 4px solid #667eea;
-            transition: all 0.3s;
-        }
-
-        .task-item:hover {
-            background: #f0f4ff;
-            transform: translateX(5px);
-        }
-
-        .task-item.completed {
-            opacity: 0.6;
-            text-decoration: line-through;
-            border-left-color: #51cf66;
-        }
-
-        .task-checkbox {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
-
-        .task-info {
-            flex: 1;
-        }
-
-        .task-title {
-            font-weight: 600;
-            color: #333;
-        }
-
-        .task-profile {
-            font-size: 12px;
-            color: #999;
-            margin-top: 3px;
-        }
-
-        .alert-item {
-            background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border-left: 4px solid #ffa500;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .alert-item.urgente {
-            background: linear-gradient(135deg, #ffe8e8 0%, #ffcccc 100%);
-            border-left-color: #ff6b6b;
-        }
-
-        .alert-item.treino {
-            background: linear-gradient(135deg, #e8f4ff 0%, #cce8ff 100%);
-            border-left-color: #667eea;
-        }
-
-        .alert-item.lazer {
-            background: linear-gradient(135deg, #e8ffe8 0%, #ccffcc 100%);
-            border-left-color: #51cf66;
-        }
-
-        .alert-item.estudo {
-            background: linear-gradient(135deg, #f5e8ff 0%, #e8ccff 100%);
-            border-left-color: #a78bfa;
-        }
-
-        .alert-content h4 {
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        .alert-content p {
-            font-size: 13px;
-            color: #666;
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: #fff;
-            border-radius: 12px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-header h3 {
-            font-size: 20px;
-            color: #333;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #999;
-        }
-
-        .stat-card {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 32px;
-            font-weight: 700;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 14px;
-            color: #999;
-        }
-
-        .profile-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-
-        .profile-card h3 {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-
-        .profile-card p {
-            font-size: 13px;
-            opacity: 0.9;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #999;
-        }
-
-        .quiz-container {
-            background: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .quiz-question {
-            margin-bottom: 25px;
-        }
-
-        .quiz-question h4 {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .quiz-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .quiz-option {
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .quiz-option:hover {
-            border-color: #667eea;
-            background: #f5f9ff;
-        }
-
-        .quiz-option input {
-            margin-right: 10px;
-        }
-
-        .quiz-result {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .quiz-result.correct {
-            background: #ebf9f0;
-            color: #2f9e45;
-        }
-
-        .quiz-result.incorrect {
-            background: #ffe0e0;
-            color: #c92a2a;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 0;
-                position: absolute;
-                height: 100vh;
-                transition: width 0.3s;
-            }
-
-            .sidebar.open {
-                width: 260px;
-            }
-
-            .main-container {
-                margin-left: 0;
-            }
-
-            .content {
-                padding: 20px;
-            }
-
-            .header {
-                padding: 15px 20px;
-            }
-
-            .grid-2, .grid-3 {
-                grid-template-columns: 1fr;
-            }
-
-            .header h2 {
-                font-size: 18px;
-            }
-        }
-
-        .toggle-sidebar {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #333;
-        }
-
-        @media (max-width: 768px) {
-            .toggle-sidebar {
-                display: block;
-            }
-        }
-    </style>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h1>🏠 Home</h1>
-            <p>Dashboard do Lar</p>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>LTK</h1>
+          <p id="subtitle">Contas da casa • offline</p>
         </div>
-        <nav class="nav-menu">
-            <div class="nav-item active" onclick="switchSection('dashboard')">
-                <span>📊 Dashboard</span>
+      </div>
+
+      <div class="top-actions">
+        <button class="btn primary" id="btnNew">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Nova conta
+        </button>
+
+        <button class="btn" id="btnSeed" title="Cria dados de exemplo">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 19c4-1 7-4 8-8 0-4-3-7-7-7 0 4 3 7 7 7 4 0 7-3 7-7 4 0 7 3 7 7-1 4-4 7-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Exemplo
+        </button>
+
+        <button class="btn" id="btnExport">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Exportar
+        </button>
+
+        <label class="btn" for="importFile" style="cursor:pointer;">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 21V9m0 0 4 4m-4-4-4 4M5 3h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Importar
+        </label>
+        <input id="importFile" type="file" accept="application/json" hidden />
+
+        <button class="btn danger" id="btnReset" title="Limpa tudo (cuidado)">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2m-1 0v16H9V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Limpar
+        </button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- LEFT -->
+      <section class="card">
+        <div class="hd">
+          <div>
+            <h2>Visão do mês</h2>
+            <div class="sub" id="monthLabel">—</div>
+          </div>
+          <div class="row" style="gap:8px;">
+            <span class="pill" id="countsPill">0 contas</span>
+          </div>
+        </div>
+
+        <div class="bd">
+          <div class="kpis">
+            <div class="kpi">
+              <div class="label">
+                <span>Total do mês</span>
+                <span class="pill" style="background:rgba(102,179,255,.12);border-color:rgba(102,179,255,.22);">somatório</span>
+              </div>
+              <div class="value" id="kpiTotal">R$ 0,00</div>
             </div>
-            <div class="nav-item" onclick="switchSection('tasks')">
-                <span>✅ Tarefas</span>
+            <div class="kpi">
+              <div class="label">
+                <span>Pago</span>
+                <span class="pill ok" id="kpiPaidPct">0%</span>
+              </div>
+              <div class="value" id="kpiPaid">R$ 0,00</div>
             </div>
-            <div class="nav-item" onclick="switchSection('alerts')">
-                <span>🔔 Alertas</span>
+            <div class="kpi">
+              <div class="label">
+                <span>A pagar</span>
+                <span class="pill warn" id="kpiOpenCount">0</span>
+              </div>
+              <div class="value" id="kpiOpen">R$ 0,00</div>
             </div>
-            <div class="nav-item" onclick="switchSection('calendar')">
-                <span>📅 Agenda</span>
+          </div>
+
+          <div class="filters" aria-label="Filtros">
+            <div class="field">
+              <label for="q">Buscar</label>
+              <input id="q" type="text" placeholder="Ex: aluguel, luz, internet..." />
             </div>
-            <div class="nav-item" onclick="switchSection('profiles')">
-                <span>👥 Perfis</span>
+            <div class="field month-center">
+              <label for="month">Mês</label>
+              <input id="month" type="month" />
             </div>
-            <div class="nav-item" onclick="switchSection('firstaid')">
-                <span>🏥 Primeiros Socorros</span>
+            <div class="field">
+              <label for="status">Status</label>
+              <select id="status">
+                <option value="all">Todos</option>
+                <option value="open">Em aberto</option>
+                <option value="paid">Pago</option>
+                <option value="late">Atrasado</option>
+              </select>
             </div>
-        </nav>
+            <div class="field">
+              <label for="catFilter">Categoria</label>
+              <select id="catFilter"></select>
+            </div>
+          </div>
+
+          <div class="sep"></div>
+
+          <div class="row" style="align-items:flex-end;">
+            <div class="hint">
+              Dica: use o menu <span class="kbd">Ações</span> em cada linha para Pago/Editar/Duplicar/Excluir.<br>
+              Atrasado = vencimento antes de hoje e não pago.
+            </div>
+            <div class="row" style="gap:8px;">
+              <button class="btn small ghost" id="btnSortDue">Ordenar por venc.</button>
+              <button class="btn small ghost" id="btnSortValue">Ordenar por valor</button>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <table class="table" aria-label="Tabela de contas">
+              <thead>
+                <tr>
+                  <th>Conta</th>
+                  <th>Categoria</th>
+                  <th>Venc.</th>
+                  <th class="right">Valor</th>
+                  <th>Status</th>
+                  <th class="right">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+
+          <div id="emptyState" class="empty" style="margin-top:12px; display:none;">
+            Nenhuma conta encontrada para os filtros atuais. Clique em <b>Nova conta</b> para adicionar.
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT -->
+      <aside class="card">
+        <div class="hd">
+          <div>
+            <h2 id="formTitle">Nova conta</h2>
+            <div class="sub" id="formSubtitle">Adicione uma conta do mês (ou recorrente)</div>
+          </div>
+          <div class="row" style="gap:8px;">
+            <button class="btn small" id="btnClearForm">Limpar</button>
+          </div>
+        </div>
+
+        <div class="bd">
+          <form id="form">
+            <input type="hidden" id="id" />
+            <div class="form-grid">
+              <div class="field">
+                <label for="name">Nome</label>
+                <input id="name" type="text" required placeholder="Ex: Aluguel, Luz, Internet" />
+              </div>
+              <div class="field">
+                <label for="category">Categoria</label>
+                <select id="category"></select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="field">
+                <label for="due">Vencimento</label>
+                <input id="due" type="date" required />
+              </div>
+              <div class="field">
+                <label for="amount">Valor (R$)</label>
+                <input id="amount" type="number" inputmode="decimal" step="0.01" min="0" required placeholder="0,00" />
+              </div>
+              <div class="field">
+                <label for="paymentMethod">Pagamento</label>
+                <select id="paymentMethod">
+                  <option value="—">—</option>
+                  <option value="Pix">Pix</option>
+                  <option value="Cartão">Cartão</option>
+                  <option value="Boleto">Boleto</option>
+                  <option value="Dinheiro">Dinheiro</option>
+                  <option value="Débito automático">Débito automático</option>
+                  <option value="Transferência">Transferência</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="checkline">
+              <div class="left">
+                <div class="t">Conta recorrente</div>
+                <div class="d">Se ligada, você pode duplicar fácil mês a mês.</div>
+              </div>
+              <div class="switch" id="recurring" role="switch" aria-checked="false" tabindex="0"></div>
+            </div>
+
+            <div class="checkline">
+              <div class="left">
+                <div class="t">Pago</div>
+                <div class="d">Marque se já foi quitada.</div>
+              </div>
+              <div class="switch" id="paid" role="switch" aria-checked="false" tabindex="0"></div>
+            </div>
+
+            <div class="sep"></div>
+
+            <div class="row">
+              <div class="hint" id="formHint">Campos obrigatórios: Nome, Vencimento e Valor.</div>
+              <div class="row" style="gap:8px;">
+                <button type="button" class="btn" id="btnCancelEdit" style="display:none;">Cancelar</button>
+                <button type="submit" class="btn primary" id="btnSave">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Salvar
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <div class="sep"></div>
+
+          <div>
+            <h2 class="sec-title">Gastos por categoria</h2>
+            <div class="sub">Somente contas do mês filtrado</div>
+            <div class="chart" id="chart"></div>
+          </div>
+        </div>
+      </aside>
     </div>
-
-    <div class="main-container">
-        <div class="header">
-            <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
-            <h2 id="sectionTitle">Dashboard</h2>
-            <div class="header-actions">
-                <span id="dateDisplay" style="color: #999; font-size: 14px;"></span>
-            </div>
-        </div>
-
-        <div class="content">
-            <div id="dashboard" class="section active">
-                <div class="grid-3">
-                    <div class="card stat-card">
-                        <div class="stat-number" id="totalTasks">0</div>
-                        <div class="stat-label">Tarefas Hoje</div>
-                    </div>
-                    <div class="card stat-card">
-                        <div class="stat-number" id="completedTasks">0</div>
-                        <div class="stat-label">Concluídas</div>
-                    </div>
-                    <div class="card stat-card">
-                        <div class="stat-number" id="totalAlerts">0</div>
-                        <div class="stat-label">Alertas Ativos</div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">👥 Membros da Casa</div>
-                    <div id="dashboardProfiles" class="grid-2"></div>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">📋 Próximas Tarefas</div>
-                    <div id="upcomingTasks"></div>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">🔔 Alertas Recentes</div>
-                    <div id="recentAlerts"></div>
-                </div>
-            </div>
-
-            <div id="tasks" class="section">
-                <div class="card">
-                    <div class="card-title">✅ Gerenciar Tarefas</div>
-                    <div class="profile-selector" id="taskProfileSelector"></div>
-                    <button class="btn btn-primary" onclick="openTaskModal()" style="margin-bottom: 20px;">+ Nova Tarefa</button>
-                    <div id="tasksList"></div>
-                </div>
-            </div>
-
-            <div id="alerts" class="section">
-                <div class="card">
-                    <div class="card-title">🔔 Gerenciar Alertas</div>
-                    <button class="btn btn-primary" onclick="openAlertModal()" style="margin-bottom: 20px;">+ Novo Alerta</button>
-                    <div id="alertsList"></div>
-                </div>
-            </div>
-
-            <div id="calendar" class="section">
-                <div class="card">
-                    <div class="card-title">📅 Agenda de Eventos</div>
-                    <button class="btn btn-primary" onclick="openEventModal()" style="margin-bottom: 20px;">+ Novo Evento</button>
-                    <div id="eventsList"></div>
-                </div>
-            </div>
-
-            <div id="profiles" class="section">
-                <div class="card">
-                    <div class="card-title">👥 Gerenciar Perfis</div>
-                    <button class="btn btn-primary" onclick="openProfileModal()" style="margin-bottom: 20px;">+ Novo Perfil</button>
-                    <div id="profilesList"></div>
-                </div>
-            </div>
-
-            <div id="firstaid" class="section">
-                <div class="card">
-                    <div class="card-title">🏥 Primeiros Socorros</div>
-                    <div id="firstAidContent"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="taskModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Nova Tarefa</h3>
-                <button class="modal-close" onclick="closeTaskModal()">✕</button>
-            </div>
-            <form onsubmit="addTask(event)">
-                <div class="form-group">
-                    <label>Tarefa</label>
-                    <input type="text" id="taskInput" required placeholder="Digite a tarefa">
-                </div>
-                <div class="form-group">
-                    <label>Pessoa</label>
-                    <select id="taskPerson" required></select>
-                </div>
-                <div class="form-group">
-                    <label>Data</label>
-                    <input type="date" id="taskDate" required>
-                </div>
-                <div class="form-group">
-                    <label>Prioridade</label>
-                    <select id="taskPriority">
-                        <option value="normal">Normal</option>
-                        <option value="alta">Alta</option>
-                        <option value="baixa">Baixa</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Adicionar Tarefa</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="alertModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Novo Alerta</h3>
-                <button class="modal-close" onclick="closeAlertModal()">✕</button>
-            </div>
-            <form onsubmit="addAlert(event)">
-                <div class="form-group">
-                    <label>Título do Alerta</label>
-                    <input type="text" id="alertTitle" required placeholder="Ex: Dia de tirar lixo">
-                </div>
-                <div class="form-group">
-                    <label>Descrição</label>
-                    <textarea id="alertDescription" placeholder="Detalhes adicionais"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Categoria</label>
-                    <select id="alertCategory" required>
-                        <option value="">Selecione...</option>
-                        <option value="limpeza">Limpeza (Lixo, Faxina)</option>
-                        <option value="alimentos">Alimentos (Comida Acabando)</option>
-                        <option value="treino">Treino/Academia</option>
-                        <option value="lazer">Lazer</option>
-                        <option value="estudo">Estudo</option>
-                        <option value="compromisso">Compromisso Geral</option>
-                        <option value="urgente">Urgente</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Data</label>
-                    <input type="date" id="alertDate" required>
-                </div>
-                <div class="form-group">
-                    <label>Frequência de Repetição</label>
-                    <select id="alertFrequency">
-                        <option value="once">Uma vez</option>
-                        <option value="weekly">Semanal</option>
-                        <option value="monthly">Mensal</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Adicionar Alerta</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="eventModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Novo Evento</h3>
-                <button class="modal-close" onclick="closeEventModal()">✕</button>
-            </div>
-            <form onsubmit="addEvent(event)">
-                <div class="form-group">
-                    <label>Título do Evento</label>
-                    <input type="text" id="eventTitle" required placeholder="Ex: Jogo de futebol">
-                </div>
-                <div class="form-group">
-                    <label>Descrição</label>
-                    <textarea id="eventDescription" placeholder="Detalhes do evento"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Data</label>
-                    <input type="date" id="eventDate" required>
-                </div>
-                <div class="form-group">
-                    <label>Hora</label>
-                    <input type="time" id="eventTime">
-                </div>
-                <div class="form-group">
-                    <label>Local</label>
-                    <input type="text" id="eventLocation" placeholder="Onde acontece?">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Adicionar Evento</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="profileModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Novo Perfil</h3>
-                <button class="modal-close" onclick="closeProfileModal()">✕</button>
-            </div>
-            <form onsubmit="addProfile(event)">
-                <div class="form-group">
-                    <label>Nome</label>
-                    <input type="text" id="profileName" required placeholder="Nome da pessoa">
-                </div>
-                <div class="form-group">
-                    <label>Cor do Perfil</label>
-                    <input type="color" id="profileColor" value="#667eea">
-                </div>
-                <div class="form-group">
-                    <label>Email (opcional)</label>
-                    <input type="email" id="profileEmail" placeholder="email@exemplo.com">
-                </div>
-                <div class="form-group">
-                    <label>Telefone (opcional)</label>
-                    <input type="tel" id="profilePhone" placeholder="(11) 99999-9999">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Adicionar Perfil</button>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        const PROFILES_KEY = 'homeProfiles';
-        const TASKS_KEY = 'homeTasks';
-        const ALERTS_KEY = 'homeAlerts';
-        const EVENTS_KEY = 'homeEvents';
-
-        let profiles = [];
-        let tasks = [];
-        let alerts = [];
-        let events = [];
-        let selectedProfile = null;
-
-        const quizData = [
-            {
-                id: 1,
-                question: "Em caso de queimadura leve, o que fazer?",
-                options: ["Colocar gelo direto na pele", "Colocar a área sob água fria por 10-20 minutos", "Aplicar manteiga", "Deixar de molho em óleo"],
-                correctAnswer: 1,
-                week: 1
-            },
-            {
-                id: 2,
-                question: "Qual é a posição de recuperação para uma pessoa desacordada?",
-                options: ["De costas com pernas elevadas", "Sentada com apoio", "Deitada de lado com a cabeça inclinada", "De pé apoiado na parede"],
-                correctAnswer: 2,
-                week: 2
-            },
-            {
-                id: 3,
-                question: "Como fazer manobra de Heimlich?",
-                options: ["Bater nas costas com força", "Colocar os braços ao redor da cintura e apertar com pressão ascendente", "Dar água para beber", "Chamar por ajuda"],
-                correctAnswer: 1,
-                week: 3
-            },
-            {
-                id: 4,
-                question: "Em caso de convulsão, o que NÃO fazer?",
-                options: ["Colocar algo na boca", "Mover a pessoa de forma brusca", "Ambas as alternativas", "Tirar a roupa"],
-                correctAnswer: 2,
-                week: 4
-            }
-        ];
-
-        document.addEventListener('DOMContentLoaded', function() {
-            loadData();
-            setTodayDate();
-            initializeApp();
-        });
-
-        function initializeApp() {
-            if (profiles.length === 0) {
-                addDefaultProfiles();
-            }
-            updateAllDisplays();
-            renderTaskProfileSelector();
-            renderProfilesList();
-        }
-
-        function addDefaultProfiles() {
-            const defaultProfiles = [
-                { id: 1, name: 'Maria', color: '#667eea', email: '', phone: '' },
-                { id: 2, name: 'João', color: '#ff6b6b', email: '', phone: '' },
-                { id: 3, name: 'Ana', color: '#51cf66', email: '', phone: '' }
-            ];
-            profiles = defaultProfiles;
-            saveData();
-            selectedProfile = profiles[0].id;
-        }
-
-        function setTodayDate() {
-            const today = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('dateDisplay').textContent = today.toLocaleDateString('pt-BR', options);
-            const dateInputs = document.querySelectorAll('input[type="date"]');
-            const todayStr = today.toISOString().split('T')[0];
-            dateInputs.forEach(input => {
-                if (!input.value) input.value = todayStr;
-            });
-        }
-
-        function loadData() {
-            profiles = JSON.parse(localStorage.getItem(PROFILES_KEY)) || [];
-            tasks = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
-            alerts = JSON.parse(localStorage.getItem(ALERTS_KEY)) || [];
-            events = JSON.parse(localStorage.getItem(EVENTS_KEY)) || [];
-        }
-
-        function saveData() {
-            localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
-            localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
-            localStorage.setItem(ALERTS_KEY, JSON.stringify(alerts));
-            localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
-        }
-
-        function switchSection(sectionId) {
-            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-            event.target.closest('.nav-item').classList.add('active');
-
-            const titles = {
-                dashboard: 'Dashboard',
-                tasks: 'Tarefas',
-                alerts: 'Alertas',
-                calendar: 'Agenda',
-                profiles: 'Perfis',
-                firstaid: 'Primeiros Socorros'
-            };
-            document.getElementById('sectionTitle').textContent = titles[sectionId];
-
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar.classList.contains('open')) sidebar.classList.remove('open');
-
-            if (sectionId === 'tasks') renderTasksList();
-            if (sectionId === 'alerts') renderAlertsList();
-            if (sectionId === 'calendar') renderEventsList();
-            if (sectionId === 'profiles') renderProfilesList();
-            if (sectionId === 'firstaid') renderFirstAid();
-            if (sectionId === 'dashboard') updateAllDisplays();
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-        }
-
-        function openTaskModal() {
-            document.getElementById('taskModal').classList.add('active');
-            const select = document.getElementById('taskPerson');
-            select.innerHTML = '';
-            profiles.forEach(profile => {
-                const option = document.createElement('option');
-                option.value = profile.id;
-                option.textContent = profile.name;
-                select.appendChild(option);
-            });
-        }
-
-        function closeTaskModal() {
-            document.getElementById('taskModal').classList.remove('active');
-            document.getElementById('taskInput').value = '';
-        }
-
-        function addTask(e) {
-            e.preventDefault();
-            const task = {
-                id: Date.now(),
-                title: document.getElementById('taskInput').value,
-                personId: parseInt(document.getElementById('taskPerson').value),
-                date: document.getElementById('taskDate').value,
-                priority: document.getElementById('taskPriority').value,
-                completed: false
-            };
-            tasks.push(task);
-            saveData();
-            closeTaskModal();
-            renderTasksList();
-            updateAllDisplays();
-        }
-
-        function renderTasksList() {
-            const container = document.getElementById('tasksList');
-            const profile = selectedProfile;
-            const profileTasks = tasks.filter(t => {
-                if (profile !== 'all') return t.personId == profile;
-                return true;
-            }).sort((a, b) => new Date(a.date) - new Date(b.date));
-
-            if (profileTasks.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Nenhuma tarefa adicionada.</p></div>';
-                return;
-            }
-
-            container.innerHTML = profileTasks.map(task => {
-                const person = profiles.find(p => p.id == task.personId);
-                return `
-                    <div class="task-item ${task.completed ? 'completed' : ''}">
-                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})">
-                        <div class="task-info">
-                            <div class="task-title">${task.title}</div>
-                            <div class="task-profile">${person?.name} • ${new Date(task.date).toLocaleDateString('pt-BR')} • Prioridade: ${task.priority}</div>
-                        </div>
-                        <button class="btn btn-danger" style="padding: 6px 10px; font-size: 12px;" onclick="deleteTask(${task.id})">Deletar</button>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function toggleTask(id) {
-            const task = tasks.find(t => t.id === id);
-            if (task) {
-                task.completed = !task.completed;
-                saveData();
-                renderTasksList();
-                updateAllDisplays();
-            }
-        }
-
-        function deleteTask(id) {
-            if (confirm('Deseja deletar esta tarefa?')) {
-                tasks = tasks.filter(t => t.id !== id);
-                saveData();
-                renderTasksList();
-                updateAllDisplays();
-            }
-        }
-
-        function renderTaskProfileSelector() {
-            const container = document.getElementById('taskProfileSelector');
-            container.innerHTML = `<div class="profile-btn ${selectedProfile === 'all' ? 'active' : ''}" onclick="selectTaskProfile('all')">Todas</div>`;
-            profiles.forEach(profile => {
-                container.innerHTML += `
-                    <div class="profile-btn ${selectedProfile === profile.id ? 'active' : ''}" onclick="selectTaskProfile(${profile.id})">
-                        <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: ${profile.color}; margin-right: 6px;"></span>${profile.name}
-                    </div>
-                `;
-            });
-        }
-
-        function selectTaskProfile(profileId) {
-            selectedProfile = profileId;
-            renderTaskProfileSelector();
-            renderTasksList();
-        }
-
-        function openAlertModal() {
-            document.getElementById('alertModal').classList.add('active');
-        }
-
-        function closeAlertModal() {
-            document.getElementById('alertModal').classList.remove('active');
-        }
-
-        function addAlert(e) {
-            e.preventDefault();
-            const alert = {
-                id: Date.now(),
-                title: document.getElementById('alertTitle').value,
-                description: document.getElementById('alertDescription').value,
-                category: document.getElementById('alertCategory').value,
-                date: document.getElementById('alertDate').value,
-                frequency: document.getElementById('alertFrequency').value,
-                active: true
-            };
-            alerts.push(alert);
-            saveData();
-            closeAlertModal();
-            renderAlertsList();
-            updateAllDisplays();
-            document.getElementById('alertTitle').value = '';
-            document.getElementById('alertDescription').value = '';
-            document.getElementById('alertCategory').value = '';
-        }
-
-        function renderAlertsList() {
-            const container = document.getElementById('alertsList');
-            if (alerts.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Nenhum alerta adicionado.</p></div>';
-                return;
-            }
-
-            container.innerHTML = alerts.map(alert => `
-                <div class="alert-item ${alert.category}">
-                    <div>
-                        <div class="alert-content">
-                            <h4>${alert.title}</h4>
-                            <p>${alert.description}</p>
-                            <div style="margin-top: 5px; font-size: 12px;">${getCategoryLabel(alert.category)} • ${new Date(alert.date).toLocaleDateString('pt-BR')}</div>
-                        </div>
-                    </div>
-                    <button class="btn btn-danger" style="padding: 6px 10px; font-size: 12px;" onclick="deleteAlert(${alert.id})">Deletar</button>
-                </div>
-            `).join('');
-        }
-
-        function deleteAlert(id) {
-            if (confirm('Deseja deletar este alerta?')) {
-                alerts = alerts.filter(a => a.id !== id);
-                saveData();
-                renderAlertsList();
-                updateAllDisplays();
-            }
-        }
-
-        function getCategoryLabel(category) {
-            const labels = {
-                limpeza: '🧹 Limpeza',
-                alimentos: '🍎 Alimentos',
-                treino: '💪 Treino',
-                lazer: '🎮 Lazer',
-                estudo: '📚 Estudo',
-                compromisso: '📅 Compromisso',
-                urgente: '🚨 Urgente'
-            };
-            return labels[category] || category;
-        }
-
-        function openEventModal() {
-            document.getElementById('eventModal').classList.add('active');
-        }
-
-        function closeEventModal() {
-            document.getElementById('eventModal').classList.remove('active');
-        }
-
-        function addEvent(e) {
-            e.preventDefault();
-            const event = {
-                id: Date.now(),
-                title: document.getElementById('eventTitle').value,
-                description: document.getElementById('eventDescription').value,
-                date: document.getElementById('eventDate').value,
-                time: document.getElementById('eventTime').value,
-                location: document.getElementById('eventLocation').value
-            };
-            events.push(event);
-            saveData();
-            closeEventModal();
-            renderEventsList();
-            document.getElementById('eventTitle').value = '';
-            document.getElementById('eventDescription').value = '';
-            document.getElementById('eventDate').value = '';
-            document.getElementById('eventTime').value = '';
-            document.getElementById('eventLocation').value = '';
-        }
-
-        function renderEventsList() {
-            const container = document.getElementById('eventsList');
-            if (events.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Nenhum evento adicionado.</p></div>';
-                return;
-            }
-
-            const sortedEvents = [...events].sort((a, b) => new Date(a.date) - new Date(b.date));
-            container.innerHTML = sortedEvents.map(event => `
-                <div class="card" style="margin-bottom: 10px;">
-                    <h4>${event.title}</h4>
-                    <p><strong>Data:</strong> ${new Date(event.date).toLocaleDateString('pt-BR')}</p>
-                    ${event.time ? `<p><strong>Hora:</strong> ${event.time}</p>` : ''}
-                    ${event.location ? `<p><strong>Local:</strong> ${event.location}</p>` : ''}
-                    ${event.description ? `<p><strong>Descrição:</strong> ${event.description}</p>` : ''}
-                    <button class="btn btn-danger" style="margin-top: 10px; padding: 6px 10px; font-size: 12px;" onclick="deleteEvent(${event.id})">Deletar</button>
-                </div>
-            `).join('');
-        }
-
-        function deleteEvent(id) {
-            if (confirm('Deseja deletar este evento?')) {
-                events = events.filter(e => e.id !== id);
-                saveData();
-                renderEventsList();
-            }
-        }
-
-        function openProfileModal() {
-            document.getElementById('profileModal').classList.add('active');
-        }
-
-        function closeProfileModal() {
-            document.getElementById('profileModal').classList.remove('active');
-        }
-
-        function addProfile(e) {
-            e.preventDefault();
-            const profile = {
-                id: Date.now(),
-                name: document.getElementById('profileName').value,
-                color: document.getElementById('profileColor').value,
-                email: document.getElementById('profileEmail').value,
-                phone: document.getElementById('profilePhone').value
-            };
-            profiles.push(profile);
-            saveData();
-            closeProfileModal();
-            renderProfilesList();
-            renderTaskProfileSelector();
-            document.getElementById('profileName').value = '';
-            document.getElementById('profileColor').value = '#667eea';
-            document.getElementById('profileEmail').value = '';
-            document.getElementById('profilePhone').value = '';
-        }
-
-        function renderProfilesList() {
-            const container = document.getElementById('profilesList');
-            container.innerHTML = profiles.map(profile => {
-                const profileTasks = tasks.filter(t => t.personId === profile.id);
-                const pendingTasks = profileTasks.filter(t => !t.completed).length;
-                return `
-                    <div class="profile-card">
-                        <h3>${profile.name}</h3>
-                        <p>Tarefas: ${pendingTasks} pendentes</p>
-                        ${profile.email ? `<p>Email: ${profile.email}</p>` : ''}
-                        ${profile.phone ? `<p>Telefone: ${profile.phone}</p>` : ''}
-                        <button class="btn btn-danger" style="margin-top: 10px; padding: 6px 12px; font-size: 12px;" onclick="deleteProfile(${profile.id})">Deletar</button>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function deleteProfile(id) {
-            if (confirm('Deseja deletar este perfil? Todas as tarefas associadas também serão deletadas.')) {
-                tasks = tasks.filter(t => t.personId !== id);
-                profiles = profiles.filter(p => p.id !== id);
-                saveData();
-                renderProfilesList();
-                renderTaskProfileSelector();
-                updateAllDisplays();
-            }
-        }
-
-        function renderDashboardProfiles() {
-            const container = document.getElementById('dashboardProfiles');
-            container.innerHTML = profiles.map(profile => {
-                const profileTasks = tasks.filter(t => t.personId === profile.id);
-                const completedTasks = profileTasks.filter(t => t.completed).length;
-                const percentage = profileTasks.length > 0 ? Math.round((completedTasks / profileTasks.length) * 100) : 0;
-                return `
-                    <div class="stat-card" style="border-top: 4px solid ${profile.color};">
-                        <div style="font-size: 30px; margin-bottom: 10px;">👤</div>
-                        <div style="font-weight: 700; color: #333;">${profile.name}</div>
-                        <div style="font-size: 13px; color: #999; margin-top: 8px;">${profileTasks.length} tarefas</div>
-                        <div style="font-size: 13px; color: #667eea; margin-top: 5px; font-weight: 600;">${percentage}% concluídas</div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderFirstAid() {
-            const container = document.getElementById('firstAidContent');
-            const currentWeek = getWeek();
-            const quiz = quizData.find(q => q.week === currentWeek) || quizData[0];
-
-            container.innerHTML = `
-                <div class="quiz-container">
-                    <h3 style="margin-bottom: 20px; text-align: center;">📚 Teste Semanal - Semana ${currentWeek}</h3>
-                    <div class="quiz-question">
-                        <h4>${quiz.question}</h4>
-                        <div class="quiz-options" id="quizOptions"></div>
-                    </div>
-                    <button class="btn btn-primary" onclick="submitQuiz(${quiz.id})" style="width: 100%; margin-top: 20px;">Verificar Resposta</button>
-                    <div id="quizResult"></div>
-                    <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #f0f0f0;">
-                        <h4 style="margin-bottom: 15px;">📖 Dicas de Primeiros Socorros</h4>
-                        <ul style="line-height: 1.8; color: #666;">
-                            <li><strong>Queimaduras:</strong> Água fria por 10-20 minutos, não gelo direto</li>
-                            <li><strong>Asfixia:</strong> Manobra de Heimlich com abraço firme e ascendente</li>
-                            <li><strong>Convulsão:</strong> Não colocar nada na boca, colocar de lado</li>
-                            <li><strong>Ferimentos Sangrentos:</strong> Pressão direta com pano limpo</li>
-                            <li><strong>Desacordado:</strong> Posição lateral de segurança</li>
-                        </ul>
-                    </div>
-                </div>
-            `;
-
-            const optionsContainer = document.getElementById('quizOptions');
-            optionsContainer.innerHTML = quiz.options.map((option, index) => `
-                <label class="quiz-option">
-                    <input type="radio" name="answer" value="${index}">
-                    ${option}
-                </label>
-            `).join('');
-        }
-
-        function submitQuiz(quizId) {
-            const selected = document.querySelector('input[name="answer"]:checked');
-            if (!selected) {
-                alert('Selecione uma resposta!');
-                return;
-            }
-
-            const quiz = quizData.find(q => q.id === quizId);
-            const resultContainer = document.getElementById('quizResult');
-            const isCorrect = parseInt(selected.value) === quiz.correctAnswer;
-
-            resultContainer.innerHTML = `
-                <div class="quiz-result ${isCorrect ? 'correct' : 'incorrect'}" style="margin-top: 20px;">
-                    ${isCorrect ? '✅ Correto!' : '❌ Incorreto!'}
-                    <p style="margin-top: 10px; font-size: 14px;">Resposta correta: ${quiz.options[quiz.correctAnswer]}</p>
-                </div>
-            `;
-        }
-
-        function getWeek() {
-            const now = new Date();
-            const start = new Date(now.getFullYear(), 0, 1);
-            const diff = now - start;
-            const oneDay = 1000 * 60 * 60 * 24;
-            const week = Math.floor(diff / oneDay / 7) + 1;
-            return Math.min(week, 4);
-        }
-
-        function updateAllDisplays() {
-            const today = new Date().toISOString().split('T')[0];
-            const todayTasks = tasks.filter(t => t.date === today);
-            const completedToday = todayTasks.filter(t => t.completed).length;
-            const activeAlerts = alerts.filter(a => new Date(a.date) >= new Date()).length;
-
-            document.getElementById('totalTasks').textContent = todayTasks.length;
-            document.getElementById('completedTasks').textContent = completedToday;
-            document.getElementById('totalAlerts').textContent = activeAlerts;
-
-            renderDashboardProfiles();
-            renderUpcomingTasks();
-            renderRecentAlerts();
-        }
-
-        function renderUpcomingTasks() {
-            const container = document.getElementById('upcomingTasks');
-            const sorted = [...tasks].sort((a, b) => new Date(a.date) - new Date(b.date));
-            const upcoming = sorted.filter(t => !t.completed).slice(0, 5);
-
-            if (upcoming.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Nenhuma tarefa pendente!</p></div>';
-                return;
-            }
-
-            container.innerHTML = upcoming.map(task => {
-                const person = profiles.find(p => p.id === task.personId);
-                return `
-                    <div class="task-item" style="margin-bottom: 10px;">
-                        <div style="width: 4px; height: 40px; background: ${person?.color || '#667eea'}; margin-right: 10px; border-radius: 2px;"></div>
-                        <div class="task-info">
-                            <div class="task-title">${task.title}</div>
-                            <div class="task-profile">${person?.name} • ${new Date(task.date).toLocaleDateString('pt-BR')}</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderRecentAlerts() {
-            const container = document.getElementById('recentAlerts');
-            const today = new Date();
-            const upcoming = alerts.filter(a => new Date(a.date) >= today).slice(0, 3);
-
-            if (upcoming.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Sem alertas urgentes!</p></div>';
-                return;
-            }
-
-            container.innerHTML = upcoming.map(alert => `
-                <div class="alert-item ${alert.category}" style="margin-bottom: 10px;">
-                    <div>
-                        <strong>${alert.title}</strong>
-                        <p style="margin-top: 3px; font-size: 12px;">${new Date(alert.date).toLocaleDateString('pt-BR')}</p>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        window.onclick = function(event) {
-            const taskModal = document.getElementById('taskModal');
-            const alertModal = document.getElementById('alertModal');
-            const eventModal = document.getElementById('eventModal');
-            const profileModal = document.getElementById('profileModal');
-
-            if (event.target === taskModal) taskModal.classList.remove('active');
-            if (event.target === alertModal) alertModal.classList.remove('active');
-            if (event.target === eventModal) eventModal.classList.remove('active');
-            if (event.target === profileModal) profileModal.classList.remove('active');
-        }
-    </script>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <div class="t" id="toastT">—</div>
+    <div class="d" id="toastD">—</div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js"));
+    }
+  </script>
 </body>
 </html>
