@@ -243,7 +243,40 @@
     <div class="d" id="toastD">—</div>
   </div>
 
+  <!-- ═══════════════════════════════════════════════
+       Firebase Firestore – itens em tempo real
+  ════════════════════════════════════════════════ -->
+  <div class="wrap" style="padding-top:0;">
+    <section class="card fb-card">
+      <div class="hd">
+        <div>
+          <h2>Itens em tempo real</h2>
+          <div class="sub">Dados sincronizados via Firebase Firestore</div>
+        </div>
+        <span class="pill" id="fb-status">Conectando…</span>
+      </div>
+
+      <div class="bd">
+        <form id="fb-form" class="fb-add-form">
+          <div class="field" style="flex:1;">
+            <label for="fb-campo">Novo item</label>
+            <input id="fb-campo" type="text" placeholder="Digite e pressione Adicionar…" required />
+          </div>
+          <button type="submit" class="btn primary fb-add-btn">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Adicionar
+          </button>
+        </form>
+
+        <div class="sep"></div>
+
+        <ul id="fb-lista" class="fb-lista"></ul>
+      </div>
+    </section>
+  </div>
+
   <script src="app.js"></script>
+  <script type="module" src="src/firebase.js"></script>
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js"));
