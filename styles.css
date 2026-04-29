@@ -676,3 +676,49 @@ input[type="month"]::-webkit-calendar-picker-indicator{
     padding: 9px 12px;
   }
 }
+
+/* ===== Firebase Firestore panel ===== */
+.fb-card{ margin-top: 14px; }
+
+.fb-add-form{
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.fb-add-btn{ flex: 0 0 auto; height: 44px; align-self: flex-end; }
+
+.fb-lista{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fb-item{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+}
+.fb-item input[type="checkbox"]{
+  width: 18px;
+  height: 18px;
+  min-height: unset;
+  flex: 0 0 auto;
+  cursor: pointer;
+  accent-color: var(--ok);
+}
+.fb-item input[type="text"]{
+  flex: 1;
+  min-width: 0;
+}
+.fb-item input[type="text"].fb-done{
+  text-decoration: line-through;
+  color: var(--faint);
+}
